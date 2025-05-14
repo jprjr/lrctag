@@ -6,8 +6,13 @@
 #include "nulllyricsource.h"
 #include "filelyricsource.h"
 #include "taglyricsource.h"
+#include "lrcliblyricsource.h"
 
 namespace LrcTag {
+
+    static LyricSource* LrcLibProviderLoader(const Config& conf, const Container* c) {
+        return new LrcLibLyricSource(conf, c);
+    }
 
     static LyricSource* TagProviderLoader(const Config& conf, const Container* c) {
         return new TagLyricSource(conf, c);
@@ -25,9 +30,10 @@ namespace LrcTag {
     }
 
     static const std::map<std::string, LyricSource* (*)(const Config&, const Container*)> LyricSourceFactoryMap = {
-        { "tag",  TagProviderLoader  },
-        { "file", FileProviderLoader },
-        { "null", NullProviderLoader },
+        { "lrclib", LrcLibProviderLoader  },
+        { "tag",    TagProviderLoader  },
+        { "file",   FileProviderLoader },
+        { "null",   NullProviderLoader },
     };
 
     LyricSourceFactory::LyricSourceFactory(const Config& config) : m_config(config) {

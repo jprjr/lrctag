@@ -14,6 +14,8 @@
 #include <unicode/uclean.h>
 #include <unicode/ustring.h>
 
+#include <curl/curl.h>
+
 #include "config.h"
 #include "worker.h"
 #include "debuglistener.h"
@@ -41,6 +43,11 @@ static LRCTAGDebugListener debugListener;
 int main(int argc, const char* argv[]) {
     LrcTag::Config c;
     setup_logger();
+
+    if(curl_global_init(CURL_GLOBAL_ALL) != 0) {
+        spdlog::critical("error initializing libcurl");
+        return 1;
+    }
 
     if(!init_unicode()) {
         spdlog::critical("error initializing libicu");

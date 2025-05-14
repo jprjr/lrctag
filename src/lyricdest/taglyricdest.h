@@ -32,7 +32,6 @@ namespace LrcTag {
             }
 
             bool saveSynchronizedLyrics(const std::vector<SynchedLyric>& sl) override {
-                if(!needsSynchronizedLyrics()) return false;
                 auto tag = m_container->tag();
                 tag->setSynchronizedLyrics(m_config, sl);
                 m_changed = true;
@@ -40,8 +39,6 @@ namespace LrcTag {
             }
 
             bool saveUnsynchronizedLyrics(const icu::UnicodeString& ul) override {
-                if(!needsUnsynchronizedLyrics()) return false;
-
                 auto tag = m_container->tag();
                 tag->setUnsynchronizedLyrics(m_config, ul);
                 m_changed = true;

@@ -90,18 +90,21 @@ namespace LrcTag {
         for(auto it = destinations.begin(); it != destinations.end(); ++it) {
             LyricDest* d = it->second;
             if(found_unsynched) {
-                logger->debug("{}: saving to unsynched lyrics destination '{}'", result.path.string(), it->first);
-                d->saveUnsynchronizedLyrics(ul);
+                if(d->needsUnsynchronizedLyrics()) {
+                    logger->debug("{}: saving to unsynched lyrics destination '{}'", result.path.string(), it->first);
+                    d->saveUnsynchronizedLyrics(ul);
+                }
             }
             if(found_synched) {
-                logger->debug("{}: saving to synched lyrics destination '{}'", result.path.string(), it->first);
-                d->saveSynchronizedLyrics(sl);
+                if(d->needsSynchronizedLyrics()) {
+                    logger->debug("{}: saving to synched lyrics destination '{}'", result.path.string(), it->first);
+                    d->saveSynchronizedLyrics(sl);
+                }
             }
             delete d;
         }
     
         delete c;
-        std::this_thread::sleep_for(std::chrono::milliseconds(3));
     }
 
 }

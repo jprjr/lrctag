@@ -50,13 +50,8 @@ namespace LrcTag {
     bool FileLyricDest::saveSynchronizedLyrics(const std::vector<SynchedLyric>& sl) {
         auto logger = LRCTAGDebugListener::getLogger();
         if(shouldWriteLRC()) {
-            if(needsSynchronizedLyrics()) {
-                logger->debug("saving synchronized lyrics to {}", m_path_lrc.string());
-                File::dump(m_path_lrc, LRC::format(sl));
-            }
-        }
-        else {
-            logger->debug("did not get lock for {}, not writing", m_path_lrc.string());
+            logger->debug("saving synchronized lyrics to {}", m_path_lrc.string());
+            File::dump(m_path_lrc, LRC::format(sl));
         }
         /* we just assume saving worked */
         return true;
@@ -64,17 +59,9 @@ namespace LrcTag {
 
     bool FileLyricDest::saveUnsynchronizedLyrics(const icu::UnicodeString& ul) {
         auto logger = LRCTAGDebugListener::getLogger();
-        logger->debug("evaluating whether to write unsych file");
         if(shouldWriteTXT()) {
-            if(needsUnsynchronizedLyrics()) {
-                logger->debug("saving unsynchronized lyrics to {}", m_path_txt.string());
-                File::dump(m_path_txt, ul);
-            } else {
-                logger->debug("not saving unsychronized lyrics - needs returned false");
-            }
-        }
-        else {
-            logger->debug("did not get lock for {}, not writing", m_path_txt.string());
+            logger->debug("saving unsynchronized lyrics to {}", m_path_txt.string());
+            File::dump(m_path_txt, ul);
         }
         /* we just assume saving worked */
         return true;

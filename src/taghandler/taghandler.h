@@ -38,16 +38,43 @@ class TagHandler {
 
         virtual bool setUnsynchronizedLyrics(const Config&, const icu::UnicodeString&) = 0;
 
-        virtual icu::UnicodeString title() const {
+        template<typename T>
+        T title() const;
+
+        template<>
+        std::string title() const {
+            return m_tag->title().to8Bit(true);
+        }
+
+        template<>
+        icu::UnicodeString title() const {
             return icu::UnicodeString::fromUTF8(m_tag->title().to8Bit(true));
         }
 
-        virtual icu::UnicodeString artist() const {
+        template<typename T>
+        T artist() const;
+
+        template<>
+        std::string artist() const {
+            return m_tag->artist().to8Bit(true);
+        }
+
+        template<>
+        icu::UnicodeString artist() const {
             return icu::UnicodeString::fromUTF8(m_tag->artist().to8Bit(true));
         }
 
-        virtual icu::UnicodeString album() const {
-            return icu::UnicodeString::fromUTF8(m_tag->album().to8Bit(true));
+        template<typename T>
+        T album() const;
+
+        template<>
+        std::string album() const {
+            return m_tag->album().to8Bit(true);
+        }
+
+        template<>
+        icu::UnicodeString album() const {
+            return icu::UnicodeString::fromUTF8(album<std::string>());
         }
 
     private:

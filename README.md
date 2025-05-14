@@ -29,7 +29,7 @@ large file collections.
 It also has options to:
 
 * Disable handling sychronized or unsynchornized lyrics completely.
-* Enable and disable different lyrics sources (tags and files).
+* Enable and disable different lyrics sources ([LRCLIB](https://lrclib.net/), tags and files).
 * Enable and disable different lyrics destinations (tags and files).
 * Enable overwriting files.
 * Recursively scan folders for audio files.
@@ -71,6 +71,7 @@ The full list of options is:
 specified multiple times for multiple extensions.
 * **`--source <type>`** - enable a lyrics source, can be specified multiple times
 for multiple sources. Defaults to **`file`**. Available sources:
+    * **`lrclib`** - fetch lyrics from [LRCLIB](https://lrclib.net/)
     * **`tag`** - read from embedded tags.
     * **`file`** - read from txt and lrc files.
 * **`--destination <type>`** - enable a lyrics destination, can be specified multiple times
@@ -95,6 +96,8 @@ to files that use vorbis comments.
 * [argparse](https://github.com/p-ranav/argparse)
 * [spdlog](https://github.com/gabime/spdlog)
 * [ICU4C](https://unicode-org.github.io/icu/userguide/icu4c/)
+* [libcurl](https://curl.se/libcurl/)
+* [JSON for Modern C++](https://json.nlohmann.me/) (aka "nlohmann JSON")
 * [CMake](https://cmake.org/) for building.
 
 I do not provide distro-specific instructions for installing packaged
