@@ -14,9 +14,9 @@
 #include <cstdio>
 
 namespace LrcTag {
-    void Worker::work(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, std::atomic<unsigned long long>& index, std::vector<LrcTag::Result>& results) {
+    void Worker::work(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, std::atomic<unsigned long long>& index, const std::vector<std::filesystem::path>& paths) {
         unsigned long long i;
-        auto max = results.size();
+        auto max = paths.size();
 
         std::string thread_name = lrctag_string_format("thread %d", m_id + 1);
         auto logger = spdlog::stderr_color_mt(thread_name);
@@ -24,18 +24,18 @@ namespace LrcTag {
 
         while( (i = index.fetch_add(1, std::memory_order_relaxed)) < max) {
             logger->trace("working on file #{}", i);
-            LrcTag::Result& r = results[i];
-            process(logger, lsf, lsd, r);
+            const std::filesystem::path& p = paths[i];
+            process(logger, lsf, lsd, p);
         }
         logger->trace("thread terminating", i);
     }
 
-    void Worker::process(const std::shared_ptr<spdlog::logger> logger, const LyricSourceFactory& lsf, const LyricDestFactory& lsd, LrcTag::Result& result) {
-        logger->debug("processing {}", result.path.string());
+    void Worker::process(const std::shared_ptr<spdlog::logger> logger, const LyricSourceFactory& lsf, const LyricDestFactory& lsd, const std::filesystem::path& p) {
+        logger->debug("processing {}", p.string());
     
-        Container* c = ContainerFactory::fromPath(result.path);
+        Container* c = ContainerFactory::fromPath(p);
         if(c == nullptr) {
-            logger->warn("{}: unknown file type", result.path.string());
+            logger->warn("{}: unknown file type", p.string());
             return;
         }
 
@@ -61,25 +61,25 @@ namespace LrcTag {
             LyricSource* ls = lsf.create(i, c);
 
             if(find_unsynched) {
-                logger->debug("{}: trying unsynchronized lyrics source '{}'", result.path.string(), lsf.name(i));
+                logger->debug("{}: trying unsynchronized lyrics source '{}'", p.string(), lsf.name(i));
                 if(ls->hasUnsynchronizedLyrics()) {
                     ul = ls->getUnsynchronizedLyrics();
                     if(ul.length() > 0) {
                         find_unsynched = false;
                         found_unsynched = true;
-                        logger->debug("{}: found unsynched lyrics via source '{}'", result.path.string(), lsf.name(i));
+                        logger->debug("{}: found unsynched lyrics via source '{}'", p.string(), lsf.name(i));
                     }
                 }
             }
 
             if(find_synched) {
-                logger->debug("{}: trying synchronized lyrics source '{}'", result.path.string(), lsf.name(i));
+                logger->debug("{}: trying synchronized lyrics source '{}'", p.string(), lsf.name(i));
                 if(ls->hasSynchronizedLyrics()) {
                     sl = ls->getSynchronizedLyrics();
                     if(sl.size() > 0) {
                         find_synched = false;
                         found_synched = true;
-                        logger->debug("{}: found synched lyrics via source '{}'", result.path.string(), lsf.name(i));
+                        logger->debug("{}: found synched lyrics via source '{}'", p.string(), lsf.name(i));
                     }
                 }
             }
@@ -91,13 +91,13 @@ namespace LrcTag {
             LyricDest* d = it->second;
             if(found_unsynched) {
                 if(d->needsUnsynchronizedLyrics()) {
-                    logger->debug("{}: saving to unsynched lyrics destination '{}'", result.path.string(), it->first);
+                    logger->debug("{}: saving to unsynched lyrics destination '{}'", p.string(), it->first);
                     d->saveUnsynchronizedLyrics(ul);
                 }
             }
             if(found_synched) {
                 if(d->needsSynchronizedLyrics()) {
-                    logger->debug("{}: saving to synched lyrics destination '{}'", result.path.string(), it->first);
+                    logger->debug("{}: saving to synched lyrics destination '{}'", p.string(), it->first);
                     d->saveSynchronizedLyrics(sl);
                 }
             }

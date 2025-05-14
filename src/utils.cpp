@@ -318,5 +318,4 @@ namespace LrcTag {
         return true;
     }
 
-
 }

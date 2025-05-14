@@ -1,7 +1,6 @@
 #ifndef LRCTAG_WORKER_INCLUDE_GUARD
 #define LRCTAG_WORKER_INCLUDE_GUARD
 
-#include "result.h"
 #include "lyricsource/lyricsourcefactory.h"
 #include "lyricdest/lyricdestfactory.h"
 
@@ -13,7 +12,7 @@ namespace LrcTag {
         private:
             int m_id;
 
-            void process(const std::shared_ptr<spdlog::logger> logger, const LyricSourceFactory& lsf, const LyricDestFactory& lsd, Result& result);
+            void process(const std::shared_ptr<spdlog::logger> logger, const LyricSourceFactory& lsf, const LyricDestFactory& lsd, const std::filesystem::path& path);
 
         public:
             constexpr Worker(int id)
@@ -21,7 +20,7 @@ namespace LrcTag {
 
             ~Worker() { }
 
-            void work(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, std::atomic<unsigned long long>& index, std::vector<Result>& results);
+            void work(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, std::atomic<unsigned long long>& index, const std::vector<std::filesystem::path>& paths);
 
     };
 }

@@ -21,6 +21,7 @@
 #include "debuglistener.h"
 #include "utils.h"
 #include "lrc.h"
+#include "scanner.h"
 
 #include "lyricsource/lyricsourcefactory.h"
 
@@ -77,10 +78,13 @@ int main(int argc, const char* argv[]) {
     if(c.synchronized_lyrics || c.unsynchronized_lyrics) {
         LrcTag::LyricSourceFactory lsf(c);
         LrcTag::LyricDestFactory lsd(c);
+        LrcTag::FsScanner fs(c);
 
-        std::vector<LrcTag::Result> results = LrcTag::Result::loadFiles(c);
+        fs.scanFiles();
 
-        spdlog::debug("scanning {} files", results.size());
+        std::vector<std::filesystem::path> files = fs.getFiles();
+
+        spdlog::debug("scanning {} files", files.size());
 
         std::vector<std::thread> threads;
         std::atomic<unsigned long long> worker_id(0);
@@ -91,7 +95,7 @@ int main(int argc, const char* argv[]) {
         for(int i = 0; i < c.threads; ++i) {
             threads.emplace_back([&]() {
                 LrcTag::Worker w(worker_id.fetch_add(1, std::memory_order_relaxed));
-                w.work(lsf, lsd, index, results);
+                w.work(lsf, lsd, index, files);
             });
         }
 
@@ -99,8 +103,8 @@ int main(int argc, const char* argv[]) {
             it->join();
         }
 
-        std::sort(results.begin(), results.end(), [](const LrcTag::Result& a, const LrcTag::Result& b) {
-            return a.path < b.path;
+        std::sort(files.begin(), files.end(), [](const std::filesystem::path& a, const std::filesystem::path& b) {
+            return a < b;
         });
     }
 
