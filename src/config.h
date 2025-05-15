@@ -19,6 +19,7 @@ namespace LrcTag {
             bool synchronized_lyrics;
             bool overwrite_tags;
             bool overwrite_files;
+            bool reportmode;
             TagLib::String vc_synched_tagname;
             TagLib::String vc_unsynched_tagname;
             std::string lrclib_endpoint;
@@ -35,6 +36,7 @@ namespace LrcTag {
               synchronized_lyrics(true),
               overwrite_tags(false),
               overwrite_files(false),
+              reportmode(false),
               vc_synched_tagname("LYRICS", TagLib::String::UTF8),
               vc_unsynched_tagname("UNSYNCEDLYRICS", TagLib::String::UTF8),
               lrclib_endpoint("https://lrclib.net/api/get")

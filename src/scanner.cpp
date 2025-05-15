@@ -80,6 +80,8 @@ namespace LrcTag {
     std::vector<std::filesystem::path> FsScanner::getFiles() {
         std::vector<std::filesystem::path> flist;
 
+        scanFiles();
+
         for(auto it = m_files.cbegin(); it != m_files.cend(); ++it) {
             flist.push_back(*it);
         }

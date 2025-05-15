@@ -19,11 +19,11 @@ namespace LrcTag {
 
             void addPath(const std::filesystem::path&, const std::filesystem::file_status&);
             void addPath(const std::filesystem::path&);
+            void scanFiles();
         public:
             FsScanner(const Config& conf);
             ~FsScanner() { }
 
-            void scanFiles();
             std::vector<std::filesystem::path> getFiles();
     };
 }

@@ -35,6 +35,7 @@ It also has options to:
 * Recursively scan folders for audio files.
 * Specify what file extensions are audio files.
 * Specify which tags to use for lyrics.
+* Generate a CSV to stdout, listing audio files and their lyrics tags/files status.
 
 This allows you to do things like - say you have an existing
 collection of lyrics files you'd like to embed into audio files:
@@ -89,6 +90,25 @@ to files that use vorbis comments.
 when saving unsynchronized lyrics to files that use vorbis comments.
 * **`--no-vorbiscomment-unsynchronized-lyrics`** - disable saving unsynchronized lyrics
 to files that use vorbis comments.
+* **`--report`** - enable the reporting mode.
+    * This will generate a CSV to stdout that lists:
+        * File path
+        * Synchronized lyrics tag status
+        * Unsynchronized lyrics tag status
+        * Synchronized lyrics file status
+        * Unsynchronized lyrics file status
+    * The status fields will be one of:
+        * "Yes" - the lyrics tag/file exists and is valid.
+        * "No" - the lyrics tag/file does not exist, or is not valid.
+        * "NA" - only appears in the tag fields if the audio format doesn't support the tag.
+        * "Unknown" - the audio file is unsupported so, no way to know.
+    * This will cause the following options to be ignored, because they're not applicable to report mode:
+        * `--no-synchronized-lyrics`
+        * `--no-unsynchronized-lyrics`
+        * `--source`
+        * `--destination`
+        * `--overwrite-tags`
+        * `--overwrite-files`
 
 ## Dependencies
 
@@ -109,7 +129,6 @@ Use cmake.
 
 I do not provide step-by-step instructions for building the program,
 as long as you have cmake you should be good-to-go.
-
 
 ## License
 

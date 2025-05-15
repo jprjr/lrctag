@@ -1,9 +1,8 @@
-#include <cstdio>
-
 #include <spdlog/spdlog.h>
 #include <spdlog/cfg/env.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include <iostream>
 #include <vector>
 #include <filesystem>
 #include <set>
@@ -22,8 +21,12 @@
 #include "utils.h"
 #include "lrc.h"
 #include "scanner.h"
+#include "report.h"
+#include "csv.h"
 
 #include "lyricsource/lyricsourcefactory.h"
+
+static LRCTAGDebugListener debugListener;
 
 static void setup_logger(void) {
     auto sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
@@ -38,8 +41,6 @@ static bool init_unicode(void) {
     if(U_FAILURE(code)) return false;
     return true;
 }
-
-static LRCTAGDebugListener debugListener;
 
 int main(int argc, const char* argv[]) {
     LrcTag::Config c;
@@ -74,38 +75,54 @@ int main(int argc, const char* argv[]) {
         spdlog::trace("main return 1");
         return 1;
     }
+    TagLib::setDebugListener(&debugListener);
 
-    if(c.synchronized_lyrics || c.unsynchronized_lyrics) {
-        LrcTag::LyricSourceFactory lsf(c);
-        LrcTag::LyricDestFactory lsd(c);
-        LrcTag::FsScanner fs(c);
+    std::vector<std::filesystem::path> files = LrcTag::FsScanner(c).getFiles();
+    spdlog::debug("scanning {} files", files.size());
 
-        fs.scanFiles();
+    std::vector<LrcTag::Worker> workers;
+    std::vector<std::thread> threads;
+    std::atomic<unsigned long long> index(0);
 
-        std::vector<std::filesystem::path> files = fs.getFiles();
+    for(int i = 0; i < c.threads; ++i) {
+        workers.emplace_back(c, i, index, files);
+    }
 
-        spdlog::debug("scanning {} files", files.size());
-
-        std::vector<std::thread> threads;
-        std::atomic<unsigned long long> worker_id(0);
-        std::atomic<unsigned long long> index(0);
-
-        TagLib::setDebugListener(&debugListener);
+    if(c.reportmode) {
+        std::vector<LrcTag::Report> reports;
+        reports.resize(files.size());
+        std::sort(files.begin(), files.end());
 
         for(int i = 0; i < c.threads; ++i) {
-            threads.emplace_back([&]() {
-                LrcTag::Worker w(worker_id.fetch_add(1, std::memory_order_relaxed));
-                w.work(lsf, lsd, index, files);
-            });
+            threads.emplace_back(&LrcTag::Worker::report,
+              workers.at(i), std::ref(reports));
         }
 
         for(auto it = threads.begin(); it != threads.end(); ++it) {
             it->join();
         }
 
-        std::sort(files.begin(), files.end(), [](const std::filesystem::path& a, const std::filesystem::path& b) {
-            return a < b;
-        });
+        const std::filesystem::path* p = files.data();
+        const LrcTag::Report* r = reports.data();
+
+        std::cout << "path,";
+        std::cout << LrcTag::Report::header() << std::endl;
+        for(unsigned long i = 0; i < files.size(); ++i) {
+            LrcTag::CSV::escape(std::cout, p[i].string());
+            std::cout << "," << r[i].string() << std::endl;
+        }
+    } else if(c.synchronized_lyrics || c.unsynchronized_lyrics) {
+        LrcTag::LyricSourceFactory lsf(c);
+        LrcTag::LyricDestFactory lsd(c);
+
+        for(int i = 0; i < c.threads; ++i) {
+            threads.emplace_back(&LrcTag::Worker::work,
+              workers.at(i), std::ref(lsf), std::ref(lsd));
+        }
+
+        for(auto it = threads.begin(); it != threads.end(); ++it) {
+            it->join();
+        }
     }
 
     spdlog::trace("main return 0");
