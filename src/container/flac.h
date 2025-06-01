@@ -4,6 +4,7 @@
 #include "container.h"
 #include "../taghandler/xiphcomment.h"
 
+#include <taglib.h>
 #include <flacfile.h>
 #include <tpropertymap.h>
 
@@ -11,7 +12,14 @@ namespace LrcTag {
     class FLACContainer: public ContainerBase {
         public:
             FLACContainer(const Config& config, const std::filesystem::path& path, TagLib::FileStream* fs)
-            : ContainerBase(config, path), m_file(fs), m_tag(config, m_file.hasXiphComment() ? m_file.xiphComment(false) : NULL) {
+            : ContainerBase(config, path),
+#if TAGLIB_MAJOR_VERSION >= 2
+              m_file(fs),
+#else
+              m_file(fs, NULL),
+#endif
+              m_tag(config,
+              m_file.hasXiphComment() ? m_file.xiphComment(false) : NULL) {
                 if(!m_file.hasXiphComment()) {
                     /* properties will try to load tags from other tag types */
                     TagLib::PropertyMap p = m_file.properties();

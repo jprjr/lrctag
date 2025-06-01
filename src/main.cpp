@@ -32,7 +32,10 @@ static LRCTAGDebugListener debugListener;
 static void setup_logger(void) {
     auto sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
     spdlog::set_default_logger(std::make_shared<spdlog::logger>("main thread", std::move(sink)));
-    spdlog::cfg::load_env_levels("LRCTAG_LOGLEVEL");
+    auto env_val = spdlog::details::os::getenv("LRCTAG_LOGLEVEL");
+    if(!env_val.empty()) {
+        spdlog::cfg::helpers::load_levels(env_val);
+    }
     LRCTAGDebugListener::setLogger(spdlog::default_logger());
 }
 

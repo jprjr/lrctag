@@ -22,8 +22,13 @@ namespace LrcTag {
             TagLib::ID3v2::Tag* m_id3v2;
             TagLib::ID3v1::Tag* m_id3v1;
 
+#if TAGLIB_VERSION_MAJOR >= 2
             TagLib::offset_t findID3v1() {
                 TagLib::offset_t id3v1_off = -1;
+#else
+            long findID3v1() {
+                long id3v1_off = -1;
+#endif
 
                 if(!m_file.isValid()) return id3v1_off;
                 if(m_file.length() < 131) return id3v1_off;
@@ -38,8 +43,13 @@ namespace LrcTag {
                 return -1;
             }
 
+#if TAGLIB_VERSION_MAJOR >= 2
             TagLib::offset_t findAPE(TagLib::offset_t id3v1_off) {
                 TagLib::offset_t ape_off = -1;
+#else
+            long findAPE(long id3v1_off) {
+                long ape_off = -1;
+#endif
 
                 if(!m_file.isValid()) return ape_off;
                 if(m_file.length() < TagLib::APE::Footer::size()) return ape_off;
@@ -64,7 +74,7 @@ namespace LrcTag {
               m_id3v2_tag(config, NULL),
               m_ape(NULL), m_id3v2(NULL), m_id3v1(NULL) {
                 /* try to find an existing APE tag */
-                TagLib::offset_t ape_off = findAPE(findID3v1());
+                auto ape_off = findAPE(findID3v1());
                 if(ape_off >= 0) {
                     m_ape = new TagLib::APE::Tag(static_cast<TagLib::File*>(&m_file), ape_off);
                     if(m_ape->isEmpty()) {
@@ -134,8 +144,13 @@ namespace LrcTag {
 
             void save() override {
                 auto logger = LRCTAGDebugListener::getLogger();
+#if TAGLIB_MAJOR_VERSION >= 2
                 TagLib::offset_t id3v1_off = -1;
                 TagLib::offset_t   ape_off = -1;
+#else
+                long id3v1_off = -1;
+                long   ape_off = -1;
+#endif
 
                 int tagsToStrip = TagLib::TrueAudio::File::NoTags;
                 if(m_file.hasID3v1Tag() && ContainerBase::m_config.trueaudio_strip_id3v1) {

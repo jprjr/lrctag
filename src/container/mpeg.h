@@ -4,6 +4,7 @@
 #include "container.h"
 #include "../taghandler/id3v2.h"
 
+#include <taglib.h>
 #include <mpegfile.h>
 #include <tpropertymap.h>
 
@@ -14,7 +15,13 @@ namespace LrcTag {
             ID3v2TagHandler m_tag;
         public:
             MPEGContainer(const Config& config, const std::filesystem::path& path, TagLib::FileStream* fs)
-            : ContainerBase(config, path), m_file(fs), m_tag(config, m_file.hasID3v2Tag() ? m_file.ID3v2Tag(false) : NULL) {
+            : ContainerBase(config, path),
+#if TAGLIB_MAJOR_VERSION >= 2
+              m_file(fs),
+#else
+              m_file(fs, NULL),
+#endif
+              m_tag(config, m_file.hasID3v2Tag() ? m_file.ID3v2Tag(false) : NULL) {
                 if(!m_file.hasID3v2Tag()) {
                     TagLib::PropertyMap p = m_file.properties();
                     if(!p.isEmpty()) {

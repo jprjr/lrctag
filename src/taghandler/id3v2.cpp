@@ -1,5 +1,7 @@
 #include "id3v2.h"
 
+#include <taglib.h>
+
 namespace LrcTag {
 
     TagLib::ID3v2::SynchronizedLyricsFrame* ID3v2TagHandler::findSynchedLyric() const {
@@ -10,7 +12,12 @@ namespace LrcTag {
 
         auto frames = m_tag->frameList("SYLT");
 
-        for(auto it = frames.cbegin(); it != frames.cend(); ++it) {
+#if TAGLIB_MAJOR_VERSION >= 2
+        for(auto it = frames.cbegin(); it != frames.cend(); ++it)
+#else
+        for(auto it = frames.begin(); it != frames.end(); ++it)
+#endif
+        {
             sylt = static_cast<TagLib::ID3v2::SynchronizedLyricsFrame*>(*it);
             if(sylt->type() == TagLib::ID3v2::SynchronizedLyricsFrame::Lyrics) {
                 ret = sylt;
@@ -50,7 +57,12 @@ namespace LrcTag {
         }
     
         auto src = m_sylt->synchedText();
-        for(auto it = src.cbegin(); it != src.cend(); ++it) {
+#if TAGLIB_MAJOR_VERSION >= 2
+        for(auto it = src.cbegin(); it != src.cend(); ++it)
+#else
+        for(auto it = src.begin(); it != src.end(); ++it)
+#endif
+        {
     
             icu::UnicodeString line = icu::UnicodeString::fromUTF8(it->text.to8Bit(true));
             nl_start->reset(line);
