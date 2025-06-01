@@ -1,7 +1,6 @@
 #include "worker.h"
 
 #include "debuglistener.h"
-#include "container/containerfactory.h"
 #include "lyricsource/filelyricsource.h"
 
 #include <thread>
@@ -20,7 +19,7 @@ namespace LrcTag {
         while( (i = m_index.fetch_add(1, std::memory_order_relaxed)) < max) {
             m_logger->trace("working on file #{}", i);
             const std::filesystem::path& p = m_paths.at(i);
-            Container* c = ContainerFactory::fromPath(p);
+            Container* c = m_container.fromPath(p);
             Report& r = reports.at(i);
             /* we don't need to worry about having the synched lyrics
              * length correct - so we also don't need to worry about
@@ -32,8 +31,8 @@ namespace LrcTag {
             if(c != NULL) {
                 const auto tag = c->tag();
 
-                if(tag->supportsSynchronizedLyrics(m_config)) {
-                    if(tag->hasSynchronizedLyrics(m_config)) {
+                if(tag->supportsSynchronizedLyrics()) {
+                    if(tag->hasSynchronizedLyrics()) {
                         r.has_synched_tag = Report::Yes;
                     } else {
                         r.has_synched_tag = Report::No;
@@ -43,8 +42,8 @@ namespace LrcTag {
                     r.has_synched_tag = Report::NA;
                 }
 
-                if(tag->supportsUnsynchronizedLyrics(m_config)) {
-                    if(tag->hasUnsynchronizedLyrics(m_config)) {
+                if(tag->supportsUnsynchronizedLyrics()) {
+                    if(tag->hasUnsynchronizedLyrics()) {
                         r.has_unsynched_tag = Report::Yes;
                     } else {
                         r.has_unsynched_tag = Report::No;
@@ -77,7 +76,7 @@ namespace LrcTag {
     void Worker::process(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, const std::filesystem::path& p) {
         m_logger->debug("processing {}", p.string());
     
-        Container* c = ContainerFactory::fromPath(p);
+        Container* c = m_container.fromPath(p);
         if(c == nullptr) {
             m_logger->warn("{}: unknown file type", p.string());
             return;

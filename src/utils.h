@@ -27,12 +27,16 @@ namespace LrcTag {
         private:
             static const icu::UnicodeString WHITESPACE_START_PATTERN;
             static const icu::UnicodeString WHITESPACE_END_PATTERN;
+            static const icu::UnicodeString NEWLINE_START_PATTERN;
+            static const icu::UnicodeString NEWLINE_END_PATTERN;
             static const icu::UnicodeString EOL_PATTERN;
             static const icu::UnicodeString OTHER_EOL_PATTERN;
 
         public:
             static icu::RegexPattern* WHITESPACE_START;
             static icu::RegexPattern* WHITESPACE_END;
+            static icu::RegexPattern* NEWLINE_START;
+            static icu::RegexPattern* NEWLINE_END;
             static icu::RegexPattern* EOL;
             static icu::RegexPattern* OTHER_EOL;
 

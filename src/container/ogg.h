@@ -13,8 +13,8 @@
 namespace LrcTag {
     class OggContainer: public ContainerBase {
         public:
-            OggContainer(const std::filesystem::path& path)
-            : ContainerBase(path), m_file(NULL) { }
+            OggContainer(const Config& config, const std::filesystem::path& path, TagLib::File* file)
+            : ContainerBase(config, path), m_file(file), m_tag(config, NULL) { }
     
             virtual ~OggContainer() override { }
     
@@ -25,7 +25,6 @@ namespace LrcTag {
             const XiphTagHandler* tag() const override {
                 return &m_tag;
             }
-
 
             TagLib::AudioProperties* audioProperties() const override {
                 return m_file->audioProperties();
@@ -39,13 +38,8 @@ namespace LrcTag {
             TagLib::File* m_file;
             XiphTagHandler m_tag;
 
-            void setTag(TagLib::Ogg::XiphComment* xc) {
-                m_tag = XiphTagHandler(xc);
-            }
-
-            void setFile(TagLib::File* f) {
-                m_file = f;
-                setTag(static_cast<TagLib::Ogg::XiphComment*>(m_file->tag()));
+            void setTag() {
+                m_tag.setTag(static_cast<TagLib::Ogg::XiphComment*>(m_file->tag()));
             }
             
     };

@@ -8,9 +8,9 @@
 namespace LrcTag {
     class OggOpusContainer: public OggContainer {
         public:
-            OggOpusContainer(const std::filesystem::path& path, TagLib::FileStream* fs)
-            : OggContainer(path), m_file(fs) {
-                OggContainer::setFile(&m_file);
+            OggOpusContainer(const Config& config, const std::filesystem::path& path, TagLib::FileStream* fs)
+            : OggContainer(config, path, static_cast<TagLib::File*>(&m_file)), m_file(fs) {
+                OggContainer::setTag();
             }
     
             ~OggOpusContainer() override { }

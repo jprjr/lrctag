@@ -18,11 +18,15 @@ namespace LrcTag {
 
     const icu::UnicodeString Regex::WHITESPACE_START_PATTERN = icu::UnicodeString::fromUTF8("^\\s+");
     const icu::UnicodeString Regex::WHITESPACE_END_PATTERN = icu::UnicodeString::fromUTF8("\\s+$");
+    const icu::UnicodeString Regex::NEWLINE_START_PATTERN = icu::UnicodeString::fromUTF8("^\\n+");
+    const icu::UnicodeString Regex::NEWLINE_END_PATTERN = icu::UnicodeString::fromUTF8("\\n+$");
     const icu::UnicodeString Regex::EOL_PATTERN = icu::UnicodeString::fromUTF8("\\n");
     const icu::UnicodeString Regex::OTHER_EOL_PATTERN = icu::UnicodeString::fromUTF8("\\r\\n?");
 
     icu::RegexPattern* Regex::WHITESPACE_START = NULL;
     icu::RegexPattern* Regex::WHITESPACE_END = NULL;
+    icu::RegexPattern* Regex::NEWLINE_START = NULL;
+    icu::RegexPattern* Regex::NEWLINE_END = NULL;
     icu::RegexPattern* Regex::EOL = NULL;
     icu::RegexPattern* Regex::OTHER_EOL = NULL;
 
@@ -43,6 +47,22 @@ namespace LrcTag {
 
         if(U_FAILURE(ec)) {
             spdlog::critical("failed to compile WHITESPACE_END_PATTERN: {}", u_errorName(ec));
+            return false;
+        }
+
+        NEWLINE_START = icu::RegexPattern::compile(NEWLINE_START_PATTERN,
+          pe, ec);
+
+        if(U_FAILURE(ec)) {
+            spdlog::critical("failed to compile NEWLINE_START_PATTERN: {}", u_errorName(ec));
+            return false;
+        }
+
+        NEWLINE_END = icu::RegexPattern::compile(NEWLINE_END_PATTERN,
+          pe, ec);
+
+        if(U_FAILURE(ec)) {
+            spdlog::critical("failed to compile NEWLINE_END_PATTERN: {}", u_errorName(ec));
             return false;
         }
 
@@ -68,6 +88,8 @@ namespace LrcTag {
     void Regex::releasePatterns() {
         delete WHITESPACE_START;
         delete WHITESPACE_END;
+        delete NEWLINE_START;
+        delete NEWLINE_END;
         delete EOL;
         delete OTHER_EOL;
     }
@@ -263,8 +285,8 @@ namespace LrcTag {
     }
 
     icu::UnicodeString String::formatInt(unsigned int val, unsigned int min_width) {
-        int32_t pos = 0;
-        int32_t len = 1;
+        uint32_t pos = 0;
+        uint32_t len = 1;
         unsigned int v = val;
         icu::UnicodeString ret;
         char16_t* buf = NULL;
@@ -276,7 +298,7 @@ namespace LrcTag {
         if(len < min_width) len = min_width;
 
         pos = len;
-        buf = ret.getBuffer(len);
+        buf = ret.getBuffer((int32_t)len);
 
         while(val) {
             buf[--pos] = BASE10_CHARS.charAt(val % 10);
@@ -286,7 +308,7 @@ namespace LrcTag {
             buf[pos] = BASE10_CHARS.charAt(0);
         }
 
-        ret.releaseBuffer(len);
+        ret.releaseBuffer((int32_t)len);
         return ret;
     }
 

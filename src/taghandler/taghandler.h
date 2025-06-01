@@ -9,76 +9,49 @@
 
 namespace LrcTag {
 class TagHandler {
+    protected:
+        const Config& m_config;
+        void setTag(TagLib::Tag* tag);
+    private:
+        TagLib::Tag* m_tag;
     public:
-        TagHandler(TagLib::Tag* tag)
-        : m_tag(tag) { }
+        TagHandler(const Config& config, TagLib::Tag* tag)
+        : m_config(config), m_tag(tag) { }
 
         virtual ~TagHandler() = default;
 
-        virtual bool supportsSynchronizedLyrics(const Config&) const {
+        virtual bool supportsSynchronizedLyrics() const {
             return false;
         }
 
-        virtual bool supportsUnsynchronizedLyrics(const Config&) const {
+        virtual bool supportsUnsynchronizedLyrics() const {
             return false;
         }
 
-        virtual bool hasSynchronizedLyrics(const Config&) const {
+        virtual bool hasSynchronizedLyrics() const {
             return false;
         }
 
-        virtual bool hasUnsynchronizedLyrics(const Config&) const {
+        virtual bool hasUnsynchronizedLyrics() const {
             return false;
         }
 
-        virtual std::vector<SynchedLyric> getSynchronizedLyrics(const Config&, unsigned int) const = 0;
-        virtual icu::UnicodeString getUnsynchronizedLyrics(const Config&) const = 0;
+        virtual std::vector<SynchedLyric> getSynchronizedLyrics(unsigned int) const = 0;
+        virtual icu::UnicodeString getUnsynchronizedLyrics() const = 0;
 
-        virtual bool setSynchronizedLyrics(const Config&, const std::vector<SynchedLyric>&) = 0;
+        virtual bool setSynchronizedLyrics(const std::vector<SynchedLyric>&) = 0;
 
-        virtual bool setUnsynchronizedLyrics(const Config&, const icu::UnicodeString&) = 0;
+        virtual bool setUnsynchronizedLyrics(const icu::UnicodeString&) = 0;
 
         template<typename T>
         T title() const;
 
-        template<>
-        std::string title() const {
-            return m_tag->title().to8Bit(true);
-        }
-
-        template<>
-        icu::UnicodeString title() const {
-            return icu::UnicodeString::fromUTF8(m_tag->title().to8Bit(true));
-        }
-
         template<typename T>
         T artist() const;
-
-        template<>
-        std::string artist() const {
-            return m_tag->artist().to8Bit(true);
-        }
-
-        template<>
-        icu::UnicodeString artist() const {
-            return icu::UnicodeString::fromUTF8(m_tag->artist().to8Bit(true));
-        }
 
         template<typename T>
         T album() const;
 
-        template<>
-        std::string album() const {
-            return m_tag->album().to8Bit(true);
-        }
-
-        template<>
-        icu::UnicodeString album() const {
-            return icu::UnicodeString::fromUTF8(album<std::string>());
-        }
-
-    private:
-        TagLib::Tag* m_tag;
 };
 }
 

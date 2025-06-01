@@ -9,6 +9,7 @@
 #include <tfile.h>
 #include <audioproperties.h>
 #include "../taghandler/taghandler.h"
+#include "../config.h"
 
 namespace LrcTag {
     class Container {
@@ -23,11 +24,14 @@ namespace LrcTag {
     };
 
     class ContainerBase: public Container {
+        protected:
+            const Config& m_config;
         private:
             const std::filesystem::path m_path;
+            
         public:
-            ContainerBase(const std::filesystem::path& path)
-            : m_path(path) { }
+            ContainerBase(const Config& config, const std::filesystem::path& path)
+            : m_config(config), m_path(path) { }
             ~ContainerBase() override { }
 
             const std::filesystem::path& path() const override {

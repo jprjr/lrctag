@@ -3,12 +3,19 @@
 
 #include <filesystem>
 #include "container.h"
+#include "../config.h"
 
 namespace LrcTag {
     class ContainerFactory {
+        private:
+            const Config& m_config;
         public:
+            ContainerFactory(const Config& config)
+                : m_config(config) { }
+            ~ContainerFactory() { }
+
             /* returns nullptr if file is not supported */
-            static Container* fromPath(const std::filesystem::path& path);
+            Container* fromPath(const std::filesystem::path& path);
     };
 }
 

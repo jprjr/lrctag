@@ -21,26 +21,26 @@ namespace LrcTag {
 
             bool needsSynchronizedLyrics() override {
                 auto tag = m_container->tag();
-                return tag->supportsSynchronizedLyrics(m_config) &&
-                  (m_config.overwrite_tags || !(tag->hasSynchronizedLyrics(m_config)));
+                return tag->supportsSynchronizedLyrics() &&
+                  (m_config.overwrite_tags || !(tag->hasSynchronizedLyrics()));
             }
 
             bool needsUnsynchronizedLyrics() override {
                 auto tag = m_container->tag();
-                return tag->supportsUnsynchronizedLyrics(m_config) &&
-                  (m_config.overwrite_tags || !(tag->hasUnsynchronizedLyrics(m_config)));
+                return tag->supportsUnsynchronizedLyrics() &&
+                  (m_config.overwrite_tags || !(tag->hasUnsynchronizedLyrics()));
             }
 
             bool saveSynchronizedLyrics(const std::vector<SynchedLyric>& sl) override {
                 auto tag = m_container->tag();
-                tag->setSynchronizedLyrics(m_config, sl);
+                tag->setSynchronizedLyrics(sl);
                 m_changed = true;
                 return true;
             }
 
             bool saveUnsynchronizedLyrics(const icu::UnicodeString& ul) override {
                 auto tag = m_container->tag();
-                tag->setUnsynchronizedLyrics(m_config, ul);
+                tag->setUnsynchronizedLyrics(ul);
                 m_changed = true;
                 return true;
             }

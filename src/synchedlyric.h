@@ -7,7 +7,7 @@ namespace LrcTag {
 
     class SynchedLyric {
         public:
-            const icu::UnicodeString m_txt;
+            icu::UnicodeString m_txt;
             unsigned int m_start;
             unsigned int m_end;
 

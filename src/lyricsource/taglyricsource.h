@@ -17,24 +17,24 @@ namespace LrcTag {
 
             bool hasSynchronizedLyrics() override {
                 const auto tag = m_container->tag();
-                return tag->supportsSynchronizedLyrics(m_config) &&
-                  tag->hasSynchronizedLyrics(m_config);
+                return tag->supportsSynchronizedLyrics() &&
+                  tag->hasSynchronizedLyrics();
             }
 
             bool hasUnsynchronizedLyrics() override {
                 const auto tag = m_container->tag();
-                return tag->supportsUnsynchronizedLyrics(m_config) &&
-                  tag->hasUnsynchronizedLyrics(m_config);
+                return tag->supportsUnsynchronizedLyrics() &&
+                  tag->hasUnsynchronizedLyrics();
             }
 
             icu::UnicodeString getUnsynchronizedLyrics() override {
                 const auto tag = m_container->tag();
-                return tag->getUnsynchronizedLyrics(m_config);
+                return tag->getUnsynchronizedLyrics();
             }
 
             std::vector<SynchedLyric> getSynchronizedLyrics() override {
                 const auto tag = m_container->tag();
-                return tag->getSynchronizedLyrics(m_config, m_container->audioProperties()->lengthInMilliseconds());
+                return tag->getSynchronizedLyrics(m_container->audioProperties()->lengthInMilliseconds());
             }
     };
 }
