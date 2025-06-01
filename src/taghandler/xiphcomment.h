@@ -34,23 +34,35 @@ class XiphTagHandler: public TagHandler {
         }
 
         bool hasSynchronizedLyrics() const override {
-            return TagHandler::m_config.synchronized_lyrics && TagHandler::m_config.vc_synched_tagname.size() > 0 && m_xc->contains(TagHandler::m_config.vc_synched_tagname.upper());
+            if(TagHandler::m_config.synchronized_lyrics && TagHandler::m_config.vc_synched_tagname.size() > 0 && m_xc != NULL) {
+                return m_xc->contains(TagHandler::m_config.vc_synched_tagname.upper());
+            }
+            return false;
         }
 
         bool hasUnsynchronizedLyrics() const override {
-            return TagHandler::m_config.unsynchronized_lyrics && TagHandler::m_config.vc_unsynched_tagname.size() > 0 && m_xc->contains(TagHandler::m_config.vc_unsynched_tagname.upper());
+            if(TagHandler::m_config.unsynchronized_lyrics && TagHandler::m_config.vc_unsynched_tagname.size() > 0 && m_xc != NULL) {
+                return m_xc->contains(TagHandler::m_config.vc_unsynched_tagname.upper());
+            }
+            return false;
         }
 
         std::vector<SynchedLyric> getSynchronizedLyrics(unsigned int len) const override {
-            return LRC::parse(icu::UnicodeString::fromUTF8(m_xc->fieldListMap()[TagHandler::m_config.vc_synched_tagname.upper()][0].to8Bit(true)), len);
+            if(TagHandler::m_config.unsynchronized_lyrics && TagHandler::m_config.vc_unsynched_tagname.size() > 0 && m_xc != NULL) {
+                return LRC::parse(icu::UnicodeString::fromUTF8(m_xc->fieldListMap()[TagHandler::m_config.vc_synched_tagname.upper()][0].to8Bit(true)), len);
+            }
+            return std::vector<SynchedLyric>();
         }
 
         icu::UnicodeString getUnsynchronizedLyrics() const override {
-            return icu::UnicodeString::fromUTF8(m_xc->fieldListMap()[TagHandler::m_config.vc_synched_tagname.upper()][0].to8Bit(true));
+            if(TagHandler::m_config.synchronized_lyrics && TagHandler::m_config.vc_synched_tagname.size() > 0 && m_xc != NULL) {
+                return icu::UnicodeString::fromUTF8(m_xc->fieldListMap()[TagHandler::m_config.vc_synched_tagname.upper()][0].to8Bit(true));
+            }
+            return icu::UnicodeString();
         }
 
         bool setSynchronizedLyrics(const std::vector<SynchedLyric>& lyrics) override {
-            if(TagHandler::m_config.synchronized_lyrics && TagHandler::m_config.vc_synched_tagname.size() > 0) {
+            if(TagHandler::m_config.synchronized_lyrics && TagHandler::m_config.vc_synched_tagname.size() > 0 && m_xc != NULL) {
                 m_xc->addField(TagHandler::m_config.vc_synched_tagname, TagLib::String(
                   String::toUTF8(
                     LRC::format(lyrics)
@@ -61,7 +73,7 @@ class XiphTagHandler: public TagHandler {
         }
 
         bool setUnsynchronizedLyrics(const icu::UnicodeString& lyrics) override {
-            if(TagHandler::m_config.unsynchronized_lyrics && TagHandler::m_config.vc_unsynched_tagname.size() > 0) {
+            if(TagHandler::m_config.unsynchronized_lyrics && TagHandler::m_config.vc_unsynched_tagname.size() > 0 && m_xc != NULL) {
                 m_xc->addField(TagHandler::m_config.vc_unsynched_tagname, TagLib::String(
                   String::toUTF8(lyrics), TagLib::String::UTF8
                 ), true);

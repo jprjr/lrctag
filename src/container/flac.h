@@ -8,6 +8,8 @@
 #include <flacfile.h>
 #include <tpropertymap.h>
 
+#include "../debuglistener.h"
+
 namespace LrcTag {
     class FLACContainer: public ContainerBase {
         public:
@@ -20,7 +22,9 @@ namespace LrcTag {
 #endif
               m_tag(config,
               m_file.hasXiphComment() ? m_file.xiphComment(false) : NULL) {
-                if(!m_file.hasXiphComment()) {
+                auto logger = LRCTAGDebugListener::getLogger();
+                if(!m_tag.hasTag()) {
+                    logger->warn("{} does not have Vorbis Comments, creating", path.string());
                     /* properties will try to load tags from other tag types */
                     TagLib::PropertyMap p = m_file.properties();
                     if(!p.isEmpty()) {
@@ -30,6 +34,7 @@ namespace LrcTag {
                     /* force a xiph comment to be created */
                     m_tag.setTag(m_file.xiphComment(true));
                 }
+                assert(m_tag.hasTag());
             }
     
             ~FLACContainer() override {
