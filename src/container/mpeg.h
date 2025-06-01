@@ -8,6 +8,10 @@
 #include <mpegfile.h>
 #include <tpropertymap.h>
 
+#if TAGLIB_MAJOR_VERSION < 2
+#include <id3v2framefactory.h>
+#endif
+
 namespace LrcTag {
     class MPEGContainer: public ContainerBase {
         private:
@@ -19,7 +23,7 @@ namespace LrcTag {
 #if TAGLIB_MAJOR_VERSION >= 2
               m_file(fs),
 #else
-              m_file(fs, NULL),
+              m_file(fs, TagLib::ID3v2::FrameFactory::instance()),
 #endif
               m_tag(config, m_file.hasID3v2Tag() ? m_file.ID3v2Tag(false) : NULL) {
                 if(!m_file.hasID3v2Tag()) {

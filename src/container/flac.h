@@ -8,6 +8,10 @@
 #include <flacfile.h>
 #include <tpropertymap.h>
 
+#if TAGLIB_MAJOR_VERSION < 2
+#include <id3v2framefactory.h>
+#endif
+
 #include "../debuglistener.h"
 
 namespace LrcTag {
@@ -18,7 +22,7 @@ namespace LrcTag {
 #if TAGLIB_MAJOR_VERSION >= 2
               m_file(fs),
 #else
-              m_file(fs, NULL),
+              m_file(fs, TagLib::ID3v2::FrameFactory::instance()),
 #endif
               m_tag(config,
               m_file.hasXiphComment() ? m_file.xiphComment(false) : NULL) {
