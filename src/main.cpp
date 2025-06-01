@@ -23,6 +23,7 @@
 #include "scanner.h"
 #include "report.h"
 #include "csv.h"
+#include "progress.h"
 
 #include "lyricsource/lyricsourcefactory.h"
 
@@ -83,9 +84,10 @@ int main(int argc, const char* argv[]) {
     std::vector<LrcTag::Worker> workers;
     std::vector<std::thread> threads;
     std::atomic<unsigned long long> index(0);
+    LrcTag::Progress progress(c, files.size());
 
     for(int i = 0; i < c.threads; ++i) {
-        workers.emplace_back(c, i, index, files);
+        workers.emplace_back(c, i, index, files, progress);
     }
 
     if(c.reportmode) {

@@ -2,6 +2,7 @@
 
 #include "debuglistener.h"
 #include "lyricsource/filelyricsource.h"
+#include "progress.h"
 
 #include <thread>
 #include <chrono>
@@ -55,6 +56,7 @@ namespace LrcTag {
 
                 delete c;
             }
+            m_progress.inc();
         }
         m_logger->trace("thread terminating", i);
     }
@@ -69,6 +71,7 @@ namespace LrcTag {
             m_logger->trace("working on file #{}", i);
             const std::filesystem::path& p = m_paths.at(i);
             process(lsf, lsd, p);
+            m_progress.inc();
         }
         m_logger->trace("thread terminating", i);
     }

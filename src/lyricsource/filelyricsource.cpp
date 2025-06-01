@@ -21,7 +21,7 @@ namespace LrcTag {
 
         std::string s = File::slurp(p, f_ec);
         if(f_ec != 0) {
-            logger->warn("{}: unable to open", p.string());
+            logger->warn("{}: unable to open for reading", p.string());
             goto cleanup;
         }
 

@@ -7,6 +7,7 @@
 #include "report.h"
 #include "utils.h"
 #include "config.h"
+#include "progress.h"
 
 #include <atomic>
 #include <spdlog/spdlog.h>
@@ -21,14 +22,15 @@ namespace LrcTag {
             const std::vector<std::filesystem::path>& m_paths;
             const std::string m_thread_name;
             ContainerFactory m_container;
+            Progress& m_progress;
             std::shared_ptr<spdlog::logger> m_logger;
 
             void initLogger();
             void process(const LyricSourceFactory& lsf, const LyricDestFactory& lsd, const std::filesystem::path& path);
 
         public:
-            Worker(const Config& conf, int id, std::atomic<unsigned long long>& index, const std::vector<std::filesystem::path>& paths)
-            : m_config(conf), m_id(id), m_index(index), m_paths(paths), m_thread_name(lrctag_string_format("thread %d", id+1)), m_container(conf) {
+            Worker(const Config& conf, int id, std::atomic<unsigned long long>& index, const std::vector<std::filesystem::path>& paths, Progress& progress)
+            : m_config(conf), m_id(id), m_index(index), m_paths(paths), m_thread_name(lrctag_string_format("thread %d", id+1)), m_container(conf), m_progress(progress) {
                 m_logger = spdlog::stderr_color_mt(m_thread_name);
             }
 
