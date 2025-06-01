@@ -121,9 +121,8 @@ You can disable stripping ID3v1 tags from WavPack files.
 
 Musepack files will store lyrics in APE tags.
 
-If no APE tags are found, they will be added. If ID3v1 tags are found
-instead of APE tags, they will be converted into APE tags and stripped.
-Additionally, any ID3v2 tags will be stripped.
+If no APE tags are found, they will be added, and populated with data
+from any existing ID3v2 or ID3v1 tags. ID3v2 and ID3v2 tags will be stripped.
 
 You can disable stripping ID3v1 and ID3v2 tags from Musepack files.
 
