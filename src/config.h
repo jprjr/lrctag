@@ -33,6 +33,9 @@ namespace LrcTag {
             bool ape_strip_id3v1;
             bool wavpack_strip_id3v1;
             bool mp4_unsynch;
+            bool mpc_strip_id3v1;
+            bool mpc_strip_id3v2;
+            bool mpc_strip_ape;
             TagLib::String ape_synched_tagname;
             TagLib::String ape_unsynched_tagname;
             TagLib::ID3v2::Version id3v2_version;
@@ -62,6 +65,9 @@ namespace LrcTag {
               ape_strip_id3v1(true),
               wavpack_strip_id3v1(true),
               mp4_unsynch(true),
+              mpc_strip_id3v1(true),
+              mpc_strip_id3v2(true),
+              mpc_strip_ape(true),
               ape_synched_tagname("SyncedLyrics", TagLib::String::UTF8),
               ape_unsynched_tagname("Lyrics", TagLib::String::UTF8),
               id3v2_version(TagLib::ID3v2::v4)

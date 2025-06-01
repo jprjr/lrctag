@@ -125,6 +125,8 @@ If no APE tags are found, they will be added. If ID3v1 tags are found
 instead of APE tags, they will be converted into APE tags and stripped.
 Additionally, any ID3v2 tags will be stripped.
 
+You can disable stripping ID3v1 and ID3v2 tags from Musepack files.
+
 ### TrueAudio
 
 TrueAudio allows either ID3v2 or APE tags.
@@ -137,7 +139,7 @@ Using the `--trueaudio-id3v2` flag will change the behavior to use ID3v2 tags.
 If an ID3v2 tag does not exist, it will be created, and populated with data
 from any existing APE or ID3v1 tag. APE and ID3v1 tags will be stripped.
 
-### Ogg Vorbis, Opus, Speex, FLAC
+### Ogg Vorbis, Ogg Opus, Ogg Speex, Ogg FLAC
 
 Anything in an Ogg file will have lyrics stored in Vorbis Comments.
 
@@ -243,6 +245,13 @@ for multiple destinations. Defaults to **`file`** and **`tag`**. Available desti
 
 * **`--ape-strip-id3v1`** - strip any ID3v1 tags found in WavPack files (default).
 * **`--no-ape-strip-id3v1`** - do not strip any ID3v1 tags found in WavPack files.
+
+### Musepack file options
+
+* **`--mpc-strip-id3v1`** - strip any ID3v1 tags found in Musepack files (default).
+* **`--no-mpc-strip-id3v1`** - do not strip any ID3v1 tags found in Musepack files.
+* **`--mpc-strip-id3v2`** - strip any ID3v2 tags found in Musepack files (default).
+* **`--no-mpc-strip-id3v2`** - do not strip any ID3v2 tags found in Musepack files.
 
 ### Vorbis Comment tag options
 

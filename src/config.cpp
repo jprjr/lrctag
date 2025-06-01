@@ -125,6 +125,22 @@ namespace LrcTag {
           .help("Do not strip ID3v1 tags from WavPack files.")
           .flag();
 
+        auto &mpc_strip_id3v1_group = program.add_mutually_exclusive_group();
+        mpc_strip_id3v1_group.add_argument("--mpc-strip-id3v1")
+          .help("Strip ID3v1 tags from Musepack files (default).")
+          .flag();
+        mpc_strip_id3v1_group.add_argument("--no-mpc-strip-id3v1")
+          .help("Do not strip ID3v1 tags from Musepack files.")
+          .flag();
+
+        auto &mpc_strip_id3v2_group = program.add_mutually_exclusive_group();
+        mpc_strip_id3v2_group.add_argument("--mpc-strip-id3v2")
+          .help("Strip ID3v2 tags from Musepack files (default).")
+          .flag();
+        mpc_strip_id3v2_group.add_argument("--no-mpc-strip-id3v2")
+          .help("Do not strip ID3v2 tags from Musepack files.")
+          .flag();
+
         auto &vc_unsynch_group = program.add_mutually_exclusive_group();
 
         vc_unsynch_group.add_argument("--vorbiscomment-synchronized")
@@ -239,6 +255,14 @@ namespace LrcTag {
 
         if(program["--no-wavpack-strip-id3v1"] == true) {
             wavpack_strip_id3v1 = false;
+        }
+
+        if(program["--no-mpc-strip-id3v1"] == true) {
+            mpc_strip_id3v1 = false;
+        }
+
+        if(program["--no-mpc-strip-id3v2"] == true) {
+            mpc_strip_id3v2 = false;
         }
 
         if(program["--no-vorbiscomment-synchronized"] == true) {
